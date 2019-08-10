@@ -3,9 +3,10 @@ from tools import *
 from flask import send_from_directory, request,Flask
 from werkzeug import secure_filename
 from yolo import YOLO,process_video
+from flask_cors import CORS
+
 
 model = YOLO()
-
 
 def create_new_folder(local_dir):
     newpath = local_dir
@@ -23,6 +24,7 @@ def make_flask_app(receivingFolder):
     return app
 
 app = make_flask_app("FlaskReceive")
+CORS(app)
 
 def detect_on_video(videoPath,returnPath):
     print(model)

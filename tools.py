@@ -57,7 +57,6 @@ def read_boxes(fileName,Img=None,n=4):
 def cluster_crowd(img,features,boxes_,thickness,draw,colors,min_samples,eps,name):
     features = (features - np.mean(features,axis=0)) / np.std(features,axis=0)
     clusters = DBSCAN(min_samples=min_samples, eps=eps).fit(np.array(features)).labels_
-    print("Clusters:", clusters)
     boxes_ = np.array(boxes_)
     u_clusters = np.unique(clusters[clusters != -1])
     for c in u_clusters:
@@ -111,9 +110,15 @@ def detectVideoCrowd(video,allBoxes,allFeatures,allnames):
         boxes=np.array(boxes).astype(float)
         features=np.array(features).astype(float)
         names=np.array(allnames[i])
-        crowd=cluster_crowd(features[names=='person'],boxes[names=='person'],2,eps=0.9)
-        res=visualize(video[i].copy(),crowd,vis=False)
-        res_video.append(res)
+        per_features=features[names == 'person']
+        per_boxes=boxes[names == 'person']
+        res=[]
+        if (len(per_boxes)):
+            crowd=cluster_crowd(per_features,per_boxes,2,eps=0.9)
+            res=visualize(video[i].copy(),crowd,vis=False)
+            res_video.append(res)
+        else:
+            res_video.append(video[i].copy())
     return res_video
 
 def cluster_crowd(features,boxes,min_samples,eps):
